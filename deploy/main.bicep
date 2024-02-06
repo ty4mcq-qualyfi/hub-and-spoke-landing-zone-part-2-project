@@ -1,55 +1,34 @@
-param parHubAddressPrefix string
-param parGatewaySubnetAddressPrefix string
-param parAppgwSubnetAddressPrefix string
-param parAzureFirewallSubnetAddressPrefix string
-param parAzureBastionSubnetAddressPrefix string
-
-param parCoreAddressPrefix string
-param parVMSubnetAddressPrefix string
-param parKVSubnetAddressPrefix string
-
-param parSpokeDevAddressPrefix string
-param parSpokeDevAppSubnetAddressPrefix string
-param parSpokeDevSqlSubnetAddressPrefix string
-param parSpokeDevStSubnetAddressPrefix string
-
-param parSpokeProdAddressPrefix string
-param parSpokeProdAppSubnetAddressPrefix string
-param parSpokeProdSqlSubnetAddressPrefix string
-param parSpokeProdStSubnetAddressPrefix string
-
 var varLocation = 'uksouth'
 
-var varHubVnetName = 'vnet-hub-${varLocation}-001'
-var varCoreVnetName = 'vnet-core-${varLocation}-001'
-var varSpokeDevVnetName = 'vnet-dev-${varLocation}-001'
-var varSpokeProdVnetName = 'vnet-prod-${varLocation}-001'
-
+param parHubAddressPrefix string
+param parCoreAddressPrefix string
+param parSpokeDevAddressPrefix string
+param parSpokeProdAddressPrefix string
 
 module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   name: 'hubVnet'
   params: {
-    name: varHubVnetName
+    name: 'vnet-hub-${varLocation}-001'
     addressPrefixes: [
-      parHubAddressPrefix
+      '${parHubAddressPrefix}.0.0/16'
     ]
     location: varLocation
     subnets: [
       {
         name: 'GatewaySubnet'
-        addressPrefix: parGatewaySubnetAddressPrefix
+        addressPrefix: '${parHubAddressPrefix}.1.0/24'
       }
       {
         name: 'AppgwSubnet'
-        addressPrefix: parAppgwSubnetAddressPrefix
+        addressPrefix: '${parHubAddressPrefix}.2.0/24'
       }
       {
         name: 'AzureFirewallSubnet'
-        addressPrefix: parAzureFirewallSubnetAddressPrefix
+        addressPrefix: '${parHubAddressPrefix}.3.0/24'
       }
       {
         name: 'AzureBastionSubnet'
-        addressPrefix: parAzureBastionSubnetAddressPrefix
+        addressPrefix: '${parHubAddressPrefix}.4.0/24'
       }
     ]
   }
@@ -58,19 +37,31 @@ module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
 module modCoreVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   name: 'coreVnet'
   params: {
-    name: varCoreVnetName
+    name: 'vnet-core-${varLocation}-001'
     addressPrefixes: [
-      parCoreAddressPrefix
+      '${parCoreAddressPrefix}.0.0/16'
     ]
     location: varLocation
     subnets: [
       {
         name: 'VMSubnet'
-        addressPrefix: parVMSubnetAddressPrefix
+        addressPrefix: '${parCoreAddressPrefix}.1.0/24'
       }
       {
         name: 'KVSubnet'
-        addressPrefix: parKVSubnetAddressPrefix
+        addressPrefix: '${parCoreAddressPrefix}.2.0/24'
+      }
+    ]
+    peerings: [
+      {
+        allowForwardedTraffic: true
+        allowGatewayTransit: false
+        allowVirtualNetworkAccess: true
+        remotePeeringAllowForwardedTraffic: true
+        remotePeeringAllowVirtualNetworkAccess: true
+        remotePeeringEnabled: true
+        remoteVirtualNetworkId: modHubVnet.outputs.resourceId
+        useRemoteGateways: false
       }
     ]
   }
@@ -79,23 +70,35 @@ module modCoreVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
 module modSpokeDevVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   name: 'spokeDevVnet'
   params: {
-    name: varSpokeDevVnetName
+    name: 'vnet-dev-${varLocation}-001'
     addressPrefixes: [
-      parSpokeDevAddressPrefix
+      '${parSpokeDevAddressPrefix}.0.0/16'
     ]
     location: varLocation
     subnets: [
       {
         name: 'AppSubnet'
-        addressPrefix: parSpokeDevAppSubnetAddressPrefix
+        addressPrefix: '${parSpokeDevAddressPrefix}.1.0/24'
       }
       {
         name: 'SqlSubnet'
-        addressPrefix: parSpokeDevSqlSubnetAddressPrefix
+        addressPrefix: '${parSpokeDevAddressPrefix}.2.0/24'
       }
       {
         name: 'StSubnet'
-        addressPrefix: parSpokeDevStSubnetAddressPrefix
+        addressPrefix: '${parSpokeDevAddressPrefix}.3.0/24'
+      }
+    ]
+    peerings: [
+      {
+        allowForwardedTraffic: false
+        allowGatewayTransit: false
+        allowVirtualNetworkAccess: true
+        remotePeeringAllowForwardedTraffic: false
+        remotePeeringAllowVirtualNetworkAccess: true
+        remotePeeringEnabled: true
+        remoteVirtualNetworkId: modHubVnet.outputs.resourceId
+        useRemoteGateways: false
       }
     ]
   }
@@ -104,23 +107,35 @@ module modSpokeDevVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
 module modSpokeProdVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   name: 'spokeProdVnet'
   params: {
-    name: varSpokeProdVnetName
+    name: 'vnet-prod-${varLocation}-001'
     addressPrefixes: [
-      parSpokeProdAddressPrefix
+      '${parSpokeProdAddressPrefix}.0.0/16'
     ]
     location: varLocation
     subnets: [
       {
         name: 'AppSubnet'
-        addressPrefix: parSpokeProdAppSubnetAddressPrefix
+        addressPrefix: '${parSpokeProdAddressPrefix}.1.0/24'
       }
       {
         name: 'SqlSubnet'
-        addressPrefix: parSpokeProdSqlSubnetAddressPrefix
+        addressPrefix: '${parSpokeProdAddressPrefix}.2.0/24'
       }
       {
         name: 'StSubnet'
-        addressPrefix: parSpokeProdStSubnetAddressPrefix
+        addressPrefix: '${parSpokeProdAddressPrefix}.3.0/24'
+      }
+    ]
+    peerings: [
+      {
+        allowForwardedTraffic: false
+        allowGatewayTransit: false
+        allowVirtualNetworkAccess: true
+        remotePeeringAllowForwardedTraffic: false
+        remotePeeringAllowVirtualNetworkAccess: true
+        remotePeeringEnabled: true
+        remoteVirtualNetworkId: modHubVnet.outputs.resourceId
+        useRemoteGateways: false
       }
     ]
   }
