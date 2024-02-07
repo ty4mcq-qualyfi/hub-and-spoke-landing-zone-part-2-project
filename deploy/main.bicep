@@ -26,6 +26,10 @@ module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
       '${parHubAddressPrefix}.0.0/16'
     ]
     location: varLocation
+    tags: {
+      Dept: 'hub'
+      Owner: 'hubOwner'
+    }
     subnets: [
       {
         name: 'GatewaySubnet'
@@ -54,14 +58,20 @@ module modCoreVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
       '${parCoreAddressPrefix}.0.0/16'
     ]
     location: varLocation
+    tags: {
+      Dept: 'core'
+      Owner: 'coreOwner'
+    }
     subnets: [
       {
         name: 'VMSubnet'
         addressPrefix: '${parCoreAddressPrefix}.1.0/24'
+        networkSecurityGroupId: modNsg.outputs.resourceId
       }
       {
         name: 'KVSubnet'
         addressPrefix: '${parCoreAddressPrefix}.2.0/24'
+        networkSecurityGroupId: modNsg.outputs.resourceId
       }
     ]
     peerings: [
@@ -86,18 +96,25 @@ module modSpokeDevVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
       '${parSpokeDevAddressPrefix}.0.0/16'
     ]
     location: varLocation
+    tags: {
+      Dept: 'dev'
+      Owner: 'devOwner'
+    }
     subnets: [
       {
         name: 'AppSubnet'
         addressPrefix: '${parSpokeDevAddressPrefix}.1.0/24'
+        networkSecurityGroupId: modNsg.outputs.resourceId
       }
       {
         name: 'SqlSubnet'
         addressPrefix: '${parSpokeDevAddressPrefix}.2.0/24'
+        networkSecurityGroupId: modNsg.outputs.resourceId
       }
       {
         name: 'StSubnet'
         addressPrefix: '${parSpokeDevAddressPrefix}.3.0/24'
+        networkSecurityGroupId: modNsg.outputs.resourceId
       }
     ]
     peerings: [
@@ -122,18 +139,25 @@ module modSpokeProdVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
       '${parSpokeProdAddressPrefix}.0.0/16'
     ]
     location: varLocation
+    tags: {
+      Dept: 'prod'
+      Owner: 'prodOwner'
+    }
     subnets: [
       {
         name: 'AppSubnet'
         addressPrefix: '${parSpokeProdAddressPrefix}.1.0/24'
+        networkSecurityGroupId: modNsg.outputs.resourceId
       }
       {
         name: 'SqlSubnet'
         addressPrefix: '${parSpokeProdAddressPrefix}.2.0/24'
+        networkSecurityGroupId: modNsg.outputs.resourceId
       }
       {
         name: 'StSubnet'
         addressPrefix: '${parSpokeProdAddressPrefix}.3.0/24'
+        networkSecurityGroupId: modNsg.outputs.resourceId
       }
     ]
     peerings: [
@@ -157,6 +181,10 @@ module modVm 'br/public:avm/res/compute/virtual-machine:0.2.1' = {
   params: {
     name: 'vm-core-${varLocation}-001'
     location: varLocation
+    tags: {
+      Dept: 'core'
+      Owner: 'coreOwner'
+    }
     computerName: parComputerName
     adminUsername: parVmAdminUsername
     adminPassword: parVmAdminPassword
@@ -190,5 +218,18 @@ module modVm 'br/public:avm/res/compute/virtual-machine:0.2.1' = {
         nicSuffix: parNicSuffix
       }
     ]
+  }
+}
+
+//Network Security Group
+module modNsg 'br/public:avm/res/network/network-security-group:0.1.2' = {
+  name: 'nsg'
+  params: {
+    name: 'nsg-default'
+    location: varLocation
+    tags: {
+      Dept: 'coreServices'
+      Owner: 'coreServicesOwner'
+    }
   }
 }
