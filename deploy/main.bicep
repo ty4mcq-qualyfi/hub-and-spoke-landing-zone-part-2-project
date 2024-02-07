@@ -5,6 +5,19 @@ param parCoreAddressPrefix string
 param parSpokeDevAddressPrefix string
 param parSpokeProdAddressPrefix string
 
+param parComputerName string
+param parVmAdminUsername string
+@secure()
+param parVmAdminPassword string
+param parOsType string
+param parVmSize string
+param parOffer string
+param parPublisher string
+param parSku string
+param parPrivateIPAddress string
+param parNicSuffix string
+
+//Virtual Networks
 module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   name: 'hubVnet'
   params: {
@@ -33,7 +46,6 @@ module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
     ]
   }
 }
-
 module modCoreVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   name: 'coreVnet'
   params: {
@@ -66,7 +78,6 @@ module modCoreVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
     ]
   }
 }
-
 module modSpokeDevVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   name: 'spokeDevVnet'
   params: {
@@ -103,7 +114,6 @@ module modSpokeDevVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
     ]
   }
 }
-
 module modSpokeProdVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   name: 'spokeProdVnet'
   params: {
@@ -136,6 +146,48 @@ module modSpokeProdVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
         remotePeeringEnabled: true
         remoteVirtualNetworkId: modHubVnet.outputs.resourceId
         useRemoteGateways: false
+      }
+    ]
+  }
+}
+
+//Virtual Machine
+module modVm 'br/public:avm/res/compute/virtual-machine:0.2.1' = {
+  name: 'vm'
+  params: {
+    name: 'vm-core-${varLocation}-001'
+    location: varLocation
+    computerName: parComputerName
+    adminUsername: parVmAdminUsername
+    adminPassword: parVmAdminPassword
+    osType: parOsType
+    vmSize: parVmSize
+    imageReference: {
+      offer: parOffer
+      publisher: parPublisher
+      sku: parSku
+      version: 'latest'
+    }
+    osDisk: {
+      caching: 'ReadWrite'
+      diskSizeGB: '128'
+      managedDisk: {
+        storageAccountType: 'Premium_LRS'
+      }
+    }
+    nicConfigurations: [
+      {
+        ipConfigurations: [
+          {
+            name: 'ipConfig'
+            properties: {
+              privateIPAllocationMethod: 'Static'
+              privateIPAddress: parPrivateIPAddress
+            }
+            subnetResourceId: modCoreVnet.outputs.subnetResourceIds[0]
+          }
+        ]
+        nicSuffix: parNicSuffix
       }
     ]
   }
