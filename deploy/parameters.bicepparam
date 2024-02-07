@@ -25,4 +25,4 @@ param parStorageAccountType = 'Premium_LRS'
 
 // Firewall Policy + Firewall Parameters
 param parAfwPolicyTier = 'Standard'
-param parAfwPolicyMode = 'Alert'
+param parAfwPolicyThreatIntelMode = 'Alert'

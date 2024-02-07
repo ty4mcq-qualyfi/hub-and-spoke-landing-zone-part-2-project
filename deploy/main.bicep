@@ -23,7 +23,7 @@ param parStorageAccountType string
 // param parBastionSkuName string
 
 param parAfwPolicyTier string
-param parAfwPolicyMode string
+param parAfwPolicyThreatIntelMode string
 
 // Virtual Networks
 module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
@@ -261,7 +261,7 @@ module modNsg 'br/public:avm/res/network/network-security-group:0.1.2' = {
 //   }
 // }
 
-// Firewall Policy + Firewall
+// Firewall Policy + Firewall Test
 module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
   name: 'afw'
   params: {
@@ -271,8 +271,9 @@ module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
       Dept: 'hub'
       Owner: 'hubOwner'
     }
+    enableProxy: true
     tier: parAfwPolicyTier
-    mode: parAfwPolicyMode
+    threatIntelMode: parAfwPolicyThreatIntelMode
     ruleCollectionGroups: [
       {
         name: 'DefaultNetworkRuleCollectionGroup'
@@ -309,3 +310,11 @@ module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
     ]
   }
 }
+
+// module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
+//   name: 'afwPolicy'
+//   params: {
+//     name: 'AfwPolicy'
+//     location: varLocation
+//   }
+// }
