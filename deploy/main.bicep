@@ -16,8 +16,16 @@ param parPublisher string
 param parSku string
 param parPrivateIPAddress string
 param parNicSuffix string
+param parCaching string
+param parDiskSizeGB string
+param parStorageAccountType string
 
-//Virtual Networks
+// param parBastionSkuName string
+
+param parAfwPolicyTier string
+param parAfwPolicyMode string
+
+// Virtual Networks
 module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   name: 'hubVnet'
   params: {
@@ -175,7 +183,7 @@ module modSpokeProdVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   }
 }
 
-//Virtual Machine
+// Virtual Machine
 module modVm 'br/public:avm/res/compute/virtual-machine:0.2.1' = {
   name: 'vm'
   params: {
@@ -197,10 +205,10 @@ module modVm 'br/public:avm/res/compute/virtual-machine:0.2.1' = {
       version: 'latest'
     }
     osDisk: {
-      caching: 'ReadWrite'
-      diskSizeGB: '128'
+      caching: parCaching
+      diskSizeGB: parDiskSizeGB
       managedDisk: {
-        storageAccountType: 'Premium_LRS'
+        storageAccountType: parStorageAccountType
       }
     }
     nicConfigurations: [
@@ -221,7 +229,7 @@ module modVm 'br/public:avm/res/compute/virtual-machine:0.2.1' = {
   }
 }
 
-//Network Security Group
+// Network Security Group
 module modNsg 'br/public:avm/res/network/network-security-group:0.1.2' = {
   name: 'nsg'
   params: {
@@ -234,21 +242,70 @@ module modNsg 'br/public:avm/res/network/network-security-group:0.1.2' = {
   }
 }
 
-//Bastion
-module modBastion 'br/public:avm/res/network/bastion-host:0.1.1' = {
-  name: 'bastion'
+// Bastion
+// module modBastion 'br/public:avm/res/network/bastion-host:0.1.1' = {
+//   name: 'bastion'
+//   params: {
+//     name: 'bas-hub-${varLocation}-001'
+//     location: varLocation
+//     tags: {
+//       Dept: 'hub'
+//       Owner: 'hubOwner'
+//     }
+//     vNetId: modHubVnet.outputs.resourceId
+//     skuName: parBastionSkuName
+//     publicIPAddressObject: {
+//       name: 'pip-hub-${varLocation}-bas-001'
+//       allocationMethod: 'Static'
+//     }
+//   }
+// }
+
+// Firewall Policy + Firewall
+module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
+  name: 'afw'
   params: {
-    name: 'bas-hub-${varLocation}-001'
+    name: 'AfwPolicy'
     location: varLocation
     tags: {
       Dept: 'hub'
       Owner: 'hubOwner'
     }
-    vNetId: modHubVnet.outputs.resourceId
-    skuName: 'Basic'
-    publicIPAddressObject: {
-      name: 'pip-hub-${varLocation}-bas-001'
-      allocationMethod: 'Static'
-    }
+    tier: parAfwPolicyTier
+    mode: parAfwPolicyMode
+    ruleCollectionGroups: [
+      {
+        name: 'DefaultNetworkRuleCollectionGroup'
+        priority: 200
+        ruleCollections: [
+          {
+            action: {
+              type: 'Allow'
+            }
+            name: 'NetworkRuleCollection'
+            priority: 1000
+            ruleCollectionType: 'FirewallPolicyFilterRuleCollection'
+            rules: [
+              {
+                name: 'any/any'
+                ruleType: 'NetworkRule'
+                destinationAddresses: [
+                  '*'
+                ]
+                destinationPorts: [
+                  '*'
+                ]
+                sourceAddresses: [
+                  '*'
+                ]
+                ipProtocols: [
+                  'Any'
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ]
   }
 }
