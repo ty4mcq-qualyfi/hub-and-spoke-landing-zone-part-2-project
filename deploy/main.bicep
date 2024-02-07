@@ -66,12 +66,12 @@ module modCoreVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
       {
         name: 'VMSubnet'
         addressPrefix: '${parCoreAddressPrefix}.1.0/24'
-        networkSecurityGroupId: modNsg.outputs.resourceId
+        networkSecurityGroupResourceId: modNsg.outputs.resourceId
       }
       {
         name: 'KVSubnet'
         addressPrefix: '${parCoreAddressPrefix}.2.0/24'
-        networkSecurityGroupId: modNsg.outputs.resourceId
+        networkSecurityGroupResourceId: modNsg.outputs.resourceId
       }
     ]
     peerings: [
@@ -104,17 +104,17 @@ module modSpokeDevVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
       {
         name: 'AppSubnet'
         addressPrefix: '${parSpokeDevAddressPrefix}.1.0/24'
-        networkSecurityGroupId: modNsg.outputs.resourceId
+        networkSecurityGroupResourceId: modNsg.outputs.resourceId
       }
       {
         name: 'SqlSubnet'
         addressPrefix: '${parSpokeDevAddressPrefix}.2.0/24'
-        networkSecurityGroupId: modNsg.outputs.resourceId
+        networkSecurityGroupResourceId: modNsg.outputs.resourceId
       }
       {
         name: 'StSubnet'
         addressPrefix: '${parSpokeDevAddressPrefix}.3.0/24'
-        networkSecurityGroupId: modNsg.outputs.resourceId
+        networkSecurityGroupResourceId: modNsg.outputs.resourceId
       }
     ]
     peerings: [
@@ -147,17 +147,17 @@ module modSpokeProdVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
       {
         name: 'AppSubnet'
         addressPrefix: '${parSpokeProdAddressPrefix}.1.0/24'
-        networkSecurityGroupId: modNsg.outputs.resourceId
+        networkSecurityGroupResourceId: modNsg.outputs.resourceId
       }
       {
         name: 'SqlSubnet'
         addressPrefix: '${parSpokeProdAddressPrefix}.2.0/24'
-        networkSecurityGroupId: modNsg.outputs.resourceId
+        networkSecurityGroupResourceId: modNsg.outputs.resourceId
       }
       {
         name: 'StSubnet'
         addressPrefix: '${parSpokeProdAddressPrefix}.3.0/24'
-        networkSecurityGroupId: modNsg.outputs.resourceId
+        networkSecurityGroupResourceId: modNsg.outputs.resourceId
       }
     ]
     peerings: [
@@ -230,6 +230,25 @@ module modNsg 'br/public:avm/res/network/network-security-group:0.1.2' = {
     tags: {
       Dept: 'coreServices'
       Owner: 'coreServicesOwner'
+    }
+  }
+}
+
+//Bastion
+module modBastion 'br/public:avm/res/network/bastion-host:0.1.1' = {
+  name: 'bastion'
+  params: {
+    name: 'bas-hub-${varLocation}-001'
+    location: varLocation
+    tags: {
+      Dept: 'hub'
+      Owner: 'hubOwner'
+    }
+    vNetId: modHubVnet.outputs.resourceId
+    skuName: 'Basic'
+    publicIPAddressObject: {
+      name: 'pip-hub-${varLocation}-bas-001'
+      allocationMethod: 'Static'
     }
   }
 }
