@@ -311,10 +311,211 @@ module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
   }
 }
 
-// module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
-//   name: 'afwPolicy'
-//   params: {
-//     name: 'AfwPolicy'
-//     location: varLocation
-//   }
-// }
+module modWaPrivateDnsZone 'br/public:avm/res/network/private-dns-zone:0.2.3'= {
+  name: 'waPrivateDnsZone'
+  params: {
+    name: 'privatelink.azurewebsites.net'
+    tags: {
+      Dept: 'coreServices'
+      Owner: 'coreServicesOwner'
+    }
+    virtualNetworkLinks: [
+      {
+        name: 'link-to-hub'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modHubVnet.outputs.resourceId
+      }
+      {
+        name: 'link-to-core'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modCoreVnet.outputs.resourceId
+      }
+      {
+        name: 'link-to-dev'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modSpokeDevVnet.outputs.resourceId
+      }
+      {
+        name: 'link-to-prod'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modSpokeProdVnet.outputs.resourceId
+      }
+    ]
+  }
+}
+module modSqlPrivateDnsZone 'br/public:avm/res/network/private-dns-zone:0.2.3'= {
+  name: 'sqlPrivateDnsZone'
+  params: {
+    name: 'privatelink${environment().suffixes.sqlServerHostname}'
+    tags: {
+      Dept: 'coreServices'
+      Owner: 'coreServicesOwner'
+    }
+    virtualNetworkLinks: [
+      {
+        name: 'link-to-hub'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modHubVnet.outputs.resourceId
+      }
+      {
+        name: 'link-to-core'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modCoreVnet.outputs.resourceId
+      }
+      {
+        name: 'link-to-dev'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modSpokeDevVnet.outputs.resourceId
+      }
+      {
+        name: 'link-to-prod'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modSpokeProdVnet.outputs.resourceId
+      }
+    ]
+  }
+}
+module modSaPrivateDnsZone 'br/public:avm/res/network/private-dns-zone:0.2.3'= {
+  name: 'saPrivateDnsZone'
+  params: {
+    name: 'privatelink.blob.${environment().suffixes.storage}'
+    tags: {
+      Dept: 'coreServices'
+      Owner: 'coreServicesOwner'
+    }
+    virtualNetworkLinks: [
+      {
+        name: 'link-to-hub'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modHubVnet.outputs.resourceId
+      }
+      {
+        name: 'link-to-core'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modCoreVnet.outputs.resourceId
+      }
+      {
+        name: 'link-to-dev'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modSpokeDevVnet.outputs.resourceId
+      }
+      {
+        name: 'link-to-prod'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modSpokeProdVnet.outputs.resourceId
+      }
+    ]
+  }
+}
+module modKvPrivateDnsZone 'br/public:avm/res/network/private-dns-zone:0.2.3'= {
+  name: 'kvPrivateDnsZone'
+  params: {
+    name: 'privatelink${environment().suffixes.keyvaultDns}'
+    tags: {
+      Dept: 'coreServices'
+      Owner: 'coreServicesOwner'
+    }
+    virtualNetworkLinks: [
+      {
+        name: 'link-to-hub'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modHubVnet.outputs.resourceId
+      }
+      {
+        name: 'link-to-core'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modCoreVnet.outputs.resourceId
+      }
+      {
+        name: 'link-to-dev'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modSpokeDevVnet.outputs.resourceId
+      }
+      {
+        name: 'link-to-prod'
+        location: 'global'
+        tags: {
+          Dept: 'coreServices'
+          Owner: 'coreServicesOwner'
+        }
+        registrationEnabled: false
+        virtualNetworkResourceId: modSpokeProdVnet.outputs.resourceId
+      }
+    ]
+  }
+}
