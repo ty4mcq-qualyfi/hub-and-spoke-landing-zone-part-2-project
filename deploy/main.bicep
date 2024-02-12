@@ -36,6 +36,8 @@ param parSqlAdministratorLogin string
 param parSqlAdministratorLoginPassword string
 param parSqlSkuName string
 param parSqlSkuTier string
+param parSqlMaxSizeBytes int
+
 
 // Virtual Networks
 module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
@@ -555,6 +557,7 @@ module modDevSql 'br/public:avm/res/sql/server:0.1.5' = {
         }
         skuName: parSqlSkuName
         skuTier: parSqlSkuTier
+        maxSizeBytes: parSqlMaxSizeBytes
       }
     ]
     privateEndpoints: [
@@ -596,6 +599,7 @@ module modProdSql 'br/public:avm/res/sql/server:0.1.5' = {
         }
         skuName: parSqlSkuName
         skuTier: parSqlSkuTier
+        maxSizeBytes: parSqlMaxSizeBytes
       }
     ]
     privateEndpoints: [

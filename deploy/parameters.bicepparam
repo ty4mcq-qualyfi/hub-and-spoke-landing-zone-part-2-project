@@ -35,3 +35,4 @@ param parSqlAdministratorLogin = 'adminusername'
 param parSqlAdministratorLoginPassword = 'Password123!'
 param parSqlSkuName = 'Basic'
 param parSqlSkuTier = 'Basic'
+param parSqlMaxSizeBytes = 2147483648
