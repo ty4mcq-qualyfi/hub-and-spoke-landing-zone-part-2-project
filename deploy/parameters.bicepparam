@@ -5,7 +5,7 @@ param parCoreAddressPrefix = '10.20'
 param parSpokeDevAddressPrefix = '10.30'
 param parSpokeProdAddressPrefix = '10.31'
 
-// Virtual Machine Module Parameters
+// Virtual Machine Parameters
 param parComputerName = 'vm1core001'
 param parVmAdminUsername = 'adminusername'
 param parVmAdminPassword = 'Password123!'
@@ -26,3 +26,7 @@ param parStorageAccountType = 'Premium_LRS'
 // Firewall Policy + Firewall Parameters
 param parAfwPolicyTier = 'Standard'
 param parAfwPolicyThreatIntelMode = 'Alert'
+
+// Storage Account Parameters
+param parSaKind = 'Standard_LRS'
+param parSaSkuName = 'StorageV2'

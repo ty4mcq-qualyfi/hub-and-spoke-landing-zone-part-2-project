@@ -1,4 +1,7 @@
 var varLocation = 'uksouth'
+var varGuidSuffix = substring(uniqueString(parUtc), 1, 8)
+
+param parUtc string = utcNow()
 
 param parHubAddressPrefix string
 param parCoreAddressPrefix string
@@ -24,6 +27,9 @@ param parStorageAccountType string
 
 param parAfwPolicyTier string
 param parAfwPolicyThreatIntelMode string
+
+param parSaKind string
+param parSaSkuName string
 
 // Virtual Networks
 module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
@@ -311,6 +317,7 @@ module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
   }
 }
 
+// Private DNS Zones
 module modWaPrivateDnsZone 'br/public:avm/res/network/private-dns-zone:0.2.3'= {
   name: 'waPrivateDnsZone'
   params: {
@@ -515,6 +522,66 @@ module modKvPrivateDnsZone 'br/public:avm/res/network/private-dns-zone:0.2.3'= {
         }
         registrationEnabled: false
         virtualNetworkResourceId: modSpokeProdVnet.outputs.resourceId
+      }
+    ]
+  }
+}
+
+// Storage Accounts
+module modDevSa 'br/public:avm/res/storage/storage-account:0.6.0' = {
+  name: 'devSa'
+  params: {
+    name: 'stdev001${varGuidSuffix}'
+    tags: {
+      Dept: 'dev'
+      Owner: 'devOwner'
+    }
+    kind: parSaKind
+    skuName: parSaSkuName
+    publicNetworkAccess: 'Disabled'
+    privateEndpoints: [
+      {
+        name: 'pe-dev-${varLocation}-sa-001'
+        location: varLocation
+        tags: {
+          Dept: 'devServices'
+          Owner: 'devOwner'
+        }
+        privateDnsZoneResourceIds: [
+          '${modSaPrivateDnsZone.outputs.resourceId}'
+        ]
+        privateDnsZoneGroupName: 'saPeDnsGroup'
+        subnetResourceId: modSpokeDevVnet.outputs.subnetResourceIds[2]
+        service: 'blob'
+      }
+    ]
+  }
+}
+module modProdSa 'br/public:avm/res/storage/storage-account:0.6.0' = {
+  name: 'prodSa'
+  params: {
+    name: 'stprod001${varGuidSuffix}'
+    tags: {
+      Dept: 'prod'
+      Owner: 'prodOwner'
+    }
+    kind: parSaKind
+    skuName: parSaSkuName
+    publicNetworkAccess: 'Disabled'
+    privateEndpoints: [
+      {
+        name: 'pe-prod-${varLocation}-sa-001'
+        location: varLocation
+        tags: {
+          Dept: 'prodServices'
+          Owner: 'prodOwner'
+        }
+        privateDnsZoneResourceIds: [
+          '${modSaPrivateDnsZone.outputs.resourceId}'
+        ]
+        privateDnsZoneGroupName: 'saPeDnsGroup'
+        subnetResourceId: modSpokeDevVnet.outputs.subnetResourceIds[2]
+        service: 'blob'
       }
     ]
   }
