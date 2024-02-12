@@ -30,3 +30,8 @@ param parAfwPolicyThreatIntelMode = 'Alert'
 // Storage Account Parameters
 param parSaKind = 'StorageV2'
 param parSaSkuName = 'Standard_LRS'
+
+param parSqlAdministratorLogin = 'adminusername'
+param parSqlAdministratorLoginPassword = 'Password123!'
+param parSqlSkuName = 'Basic'
+param parSqlSkuTier = 'Basic'

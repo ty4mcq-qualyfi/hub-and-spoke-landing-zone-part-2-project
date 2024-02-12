@@ -31,6 +31,12 @@ param parAfwPolicyThreatIntelMode string
 param parSaKind string
 param parSaSkuName string
 
+param parSqlAdministratorLogin string
+@secure()
+param parSqlAdministratorLoginPassword string
+param parSqlSkuName string
+param parSqlSkuTier string
+
 // Virtual Networks
 module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   name: 'hubVnet'
@@ -522,6 +528,90 @@ module modKvPrivateDnsZone 'br/public:avm/res/network/private-dns-zone:0.2.3'= {
         }
         registrationEnabled: false
         virtualNetworkResourceId: modSpokeProdVnet.outputs.resourceId
+      }
+    ]
+  }
+}
+
+// SQL Servers + Databases
+module modDevSql 'br/public:avm/res/sql/server:0.1.5' = {
+  name: 'devSql'
+  params: {
+    name: 'sql-dev-${varLocation}-001-${uniqueString(parUtc)}'
+    location: varLocation
+    tags: {
+      Dept: 'dev'
+      Owner: 'devOwner'
+    }
+    administratorLogin: parSqlAdministratorLogin
+    administratorLoginPassword: parSqlAdministratorLoginPassword
+    publicNetworkAccess: 'Disabled'
+    databases: [
+      {
+        name: 'sqldb-dev-${varLocation}-001'
+        tags: {
+          Dept: 'dev'
+          Owner: 'devOwner'
+        }
+        skuName: parSqlSkuName
+        skuTier: parSqlSkuTier
+      }
+    ]
+    privateEndpoints: [
+      {
+        name: 'pe-dev-${varLocation}-sql-001'
+        location: varLocation
+        tags: {
+          Dept: 'devServices'
+          Owner: 'devOwner'
+        }
+        privateDnsZoneResourceIds: [
+          '${modSqlPrivateDnsZone.outputs.resourceId}'
+        ]
+        privateDnsZoneGroupName: 'sqlPeDnsGroup'
+        subnetResourceId: modSpokeDevVnet.outputs.subnetResourceIds[1]
+        service: 'sqlServer'
+      }
+    ]
+  }
+}
+module modProdSql 'br/public:avm/res/sql/server:0.1.5' = {
+  name: 'prodSql'
+  params: {
+    name: 'sql-prod-${varLocation}-001-${uniqueString(parUtc)}'
+    location: varLocation
+    tags: {
+      Dept: 'prod'
+      Owner: 'prodOwner'
+    }
+    administratorLogin: parSqlAdministratorLogin
+    administratorLoginPassword: parSqlAdministratorLoginPassword
+    publicNetworkAccess: 'Disabled'
+    databases: [
+      {
+        name: 'sqldb-prod-${varLocation}-001'
+        tags: {
+          Dept: 'prod'
+          Owner: 'prodOwner'
+        }
+        skuName: parSqlSkuName
+        skuTier: parSqlSkuTier
+      }
+    ]
+    privateEndpoints: [
+      {
+        name: 'pe-prod-${varLocation}-sql-001'
+        location: varLocation
+        tags: {
+          Dept: 'prodServices'
+          Owner: 'prodOwner'
+        }
+        privateDnsZoneResourceIds: [
+          '${modSqlPrivateDnsZone.outputs.resourceId}'
+        ]
+        privateDnsZoneGroupName: 'sqlPeDnsGroup'
+        subnetResourceId: modSpokeProdVnet.outputs.subnetResourceIds[1]
+        service: 'sqlServer'
       }
     ]
   }
