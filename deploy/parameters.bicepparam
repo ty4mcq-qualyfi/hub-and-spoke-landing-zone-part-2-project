@@ -28,5 +28,5 @@ param parAfwPolicyTier = 'Standard'
 param parAfwPolicyThreatIntelMode = 'Alert'
 
 // Storage Account Parameters
-param parSaKind = 'Standard_LRS'
-param parSaSkuName = 'StorageV2'
+param parSaKind = 'StorageV2'
+param parSaSkuName = 'Standard_LRS'
