@@ -36,3 +36,10 @@ param parSqlAdministratorLoginPassword = 'Password123!'
 param parSqlSkuName = 'Basic'
 param parSqlSkuTier = 'Basic'
 param parSqlMaxSizeBytes = 2147483648
+
+param parAspSkuCapacity = 1
+param parAspSkuFamily = 'B'
+param parAspSkuName = 'B1'
+param parAspSkuSize = 'B1'
+param parAspSkuTier = 'Basic'
+param parWaLinuxFxVersion = 'DOTNETCORE|7.0'

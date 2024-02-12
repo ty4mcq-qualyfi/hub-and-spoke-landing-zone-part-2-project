@@ -38,6 +38,13 @@ param parSqlSkuName string
 param parSqlSkuTier string
 param parSqlMaxSizeBytes int
 
+param parAspSkuCapacity int
+param parAspSkuFamily string 
+param parAspSkuName string
+param parAspSkuSize string 
+param parAspSkuTier string
+param parWaLinuxFxVersion string
+
 
 // Virtual Networks
 module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
@@ -535,6 +542,115 @@ module modKvPrivateDnsZone 'br/public:avm/res/network/private-dns-zone:0.2.3'= {
   }
 }
 
+// App Service Plans + Web Apps
+module modDevAsp 'br/public:avm/res/web/serverfarm:0.1.0' = {
+  name: 'devAsp'
+  params: {
+    name: 'asp-dev-${varLocation}-001-${uniqueString(parUtc)}'
+    location: varLocation
+    tags: {
+      Dept: 'dev'
+      Owner: 'devOwner'
+    }
+    sku: {
+      capacity: parAspSkuCapacity
+      family: parAspSkuFamily
+      name: parAspSkuName
+      size: parAspSkuSize
+      tier: parAspSkuTier
+    }
+    kind: 'Linux'
+    reserved: true
+  }
+}
+module modProdAsp 'br/public:avm/res/web/serverfarm:0.1.0' = {
+  name: 'prodAsp'
+  params: {
+    name: 'asp-prod-${varLocation}-001-${uniqueString(parUtc)}'
+    location: varLocation
+    tags: {
+      Dept: 'prod'
+      Owner: 'prodOwner'
+    }
+    sku: {
+      capacity: parAspSkuCapacity
+      family: parAspSkuFamily
+      name: parAspSkuName
+      size: parAspSkuSize
+      tier: parAspSkuTier
+    }
+    kind: 'Linux'
+    reserved: true
+  }
+}
+
+module modDevWa 'br/public:avm/res/web/site:0.2.0' = {
+  name: 'devWa'
+  params: {
+    kind: 'app'
+    name: 'wa-dev-${varLocation}-001-${uniqueString(parUtc)}'
+    location: varLocation
+    tags: {
+      Dept: 'dev'
+      Owner: 'devOwner'
+    }
+    serverFarmResourceId: modDevAsp.outputs.resourceId
+    publicNetworkAccess: 'Disabled'
+    privateEndpoints: [
+      {
+        name: 'pe-dev-${varLocation}-wa-001'
+        location: varLocation
+        tags: {
+          Dept: 'devServices'
+          Owner: 'devOwner'
+        }
+        privateDnsZoneResourceIds: [
+          '${modWaPrivateDnsZone.outputs.resourceId}'
+        ]
+        privateDnsZoneGroupName: 'waPeDnsGroup'
+        subnetResourceId: modSpokeDevVnet.outputs.subnetResourceIds[0]
+        service: 'sites'
+      }
+    ]
+    siteConfig: {
+      linuxFxVersion: parWaLinuxFxVersion
+    }
+  }
+}
+module modProdWa 'br/public:avm/res/web/site:0.2.0' = {
+  name: 'prodWa'
+  params: {
+    kind: 'app'
+    name: 'wa-prod-${varLocation}-001-${uniqueString(parUtc)}'
+    location: varLocation
+    tags: {
+      Dept: 'prod'
+      Owner: 'prodOwner'
+    }
+    serverFarmResourceId: modProdAsp.outputs.resourceId
+    publicNetworkAccess: 'Disabled'
+    privateEndpoints: [
+      {
+        name: 'pe-prod-${varLocation}-wa-001'
+        location: varLocation
+        tags: {
+          Dept: 'prodServices'
+          Owner: 'prodOwner'
+        }
+        privateDnsZoneResourceIds: [
+          '${modWaPrivateDnsZone.outputs.resourceId}'
+        ]
+        privateDnsZoneGroupName: 'waPeDnsGroup'
+        subnetResourceId: modSpokeProdVnet.outputs.subnetResourceIds[0]
+        service: 'sites'
+      }
+    ]
+    siteConfig: {
+      linuxFxVersion: parWaLinuxFxVersion
+    }
+  }
+}
+
 // SQL Servers + Databases
 module modDevSql 'br/public:avm/res/sql/server:0.1.5' = {
   name: 'devSql'
@@ -674,7 +790,7 @@ module modProdSa 'br/public:avm/res/storage/storage-account:0.6.0' = {
           '${modSaPrivateDnsZone.outputs.resourceId}'
         ]
         privateDnsZoneGroupName: 'saPeDnsGroup'
-        subnetResourceId: modSpokeDevVnet.outputs.subnetResourceIds[2]
+        subnetResourceId: modSpokeProdVnet.outputs.subnetResourceIds[2]
         service: 'blob'
       }
     ]
