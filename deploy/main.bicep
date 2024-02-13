@@ -249,6 +249,17 @@ module modVm 'br/public:avm/res/compute/virtual-machine:0.2.1' = {
         nicSuffix: parNicSuffix
       }
     ]
+    extensionAzureDiskEncryptionConfig: {
+      enabled: true
+      settings: {
+        EncryptionOperation: 'EnableEncryption'
+        KeuVaultResourceId: modEncryptKv.outputs.resourceId
+        KeuVaultURL: modEncryptKv.outputs.uri
+        KeyEncryptionAlgorithm: 'RSA-OAEP'
+        VolumeType: 'All'
+        ResizeOSDisk: 'false'
+      }
+    }
   }
 }
 
