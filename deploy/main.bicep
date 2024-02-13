@@ -249,6 +249,7 @@ module modVm 'br/public:avm/res/compute/virtual-machine:0.2.1' = {
         nicSuffix: parNicSuffix
       }
     ]
+    encryptionAtHost: false
     extensionAzureDiskEncryptionConfig: {
       enabled: true
       settings: {
