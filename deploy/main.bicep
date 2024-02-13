@@ -45,6 +45,8 @@ param parAspSkuSize string
 param parAspSkuTier string
 param parWaLinuxFxVersion string
 
+param parUserObjectId string
+
 
 // Virtual Networks
 module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
@@ -601,7 +603,7 @@ module modDevWa 'br/public:avm/res/web/site:0.2.0' = {
         name: 'pe-dev-${varLocation}-wa-001'
         location: varLocation
         tags: {
-          Dept: 'devServices'
+          Dept: 'dev'
           Owner: 'devOwner'
         }
         privateDnsZoneResourceIds: [
@@ -634,7 +636,7 @@ module modProdWa 'br/public:avm/res/web/site:0.2.0' = {
         name: 'pe-prod-${varLocation}-wa-001'
         location: varLocation
         tags: {
-          Dept: 'prodServices'
+          Dept: 'prod'
           Owner: 'prodOwner'
         }
         privateDnsZoneResourceIds: [
@@ -681,7 +683,7 @@ module modDevSql 'br/public:avm/res/sql/server:0.1.5' = {
         name: 'pe-dev-${varLocation}-sql-001'
         location: varLocation
         tags: {
-          Dept: 'devServices'
+          Dept: 'dev'
           Owner: 'devOwner'
         }
         privateDnsZoneResourceIds: [
@@ -723,7 +725,7 @@ module modProdSql 'br/public:avm/res/sql/server:0.1.5' = {
         name: 'pe-prod-${varLocation}-sql-001'
         location: varLocation
         tags: {
-          Dept: 'prodServices'
+          Dept: 'prod'
           Owner: 'prodOwner'
         }
         privateDnsZoneResourceIds: [
@@ -754,7 +756,7 @@ module modDevSa 'br/public:avm/res/storage/storage-account:0.6.0' = {
         name: 'pe-dev-${varLocation}-sa-001'
         location: varLocation
         tags: {
-          Dept: 'devServices'
+          Dept: 'dev'
           Owner: 'devOwner'
         }
         privateDnsZoneResourceIds: [
@@ -783,7 +785,7 @@ module modProdSa 'br/public:avm/res/storage/storage-account:0.6.0' = {
         name: 'pe-prod-${varLocation}-sa-001'
         location: varLocation
         tags: {
-          Dept: 'prodServices'
+          Dept: 'prod'
           Owner: 'prodOwner'
         }
         privateDnsZoneResourceIds: [
@@ -792,6 +794,57 @@ module modProdSa 'br/public:avm/res/storage/storage-account:0.6.0' = {
         privateDnsZoneGroupName: 'saPeDnsGroup'
         subnetResourceId: modSpokeProdVnet.outputs.subnetResourceIds[2]
         service: 'blob'
+      }
+    ]
+  }
+}
+
+// Key Vault
+module modEncryptKv 'br/public:avm/res/key-vault/vault:0.3.4' = {
+  name: 'encryptKv'
+  params: {
+    name: 'kv-encrypt-core-${varGuidSuffix}'
+    location: varLocation
+    tags: {
+      Dept: 'core'
+      Owner: 'coreOwner'
+    }
+    enableVaultForDiskEncryption: true
+    enableVaultForTemplateDeployment: false
+    enableVaultForDeployment: false
+    publicNetworkAccess: 'Enabled'
+    sku: 'standard'
+    privateEndpoints: [
+      {
+        name: 'pe-core-${varLocation}-kv-001'
+        location: varLocation
+        tags: {
+          Dept: 'core'
+          Owner: 'coreOwner'
+        }
+        privateDnsZoneResourceIds: [
+          '${modKvPrivateDnsZone.outputs.resourceId}'
+        ]
+        privateDnsZoneGroupName: 'kvPeDnsGroup'
+        subnetResourceId: modCoreVnet.outputs.subnetResourceIds[1]
+        service: 'vault'
+      }
+    ]
+    accessPolicies: [
+      {
+        tenantId: subscription().tenantId
+        objectId: parUserObjectId
+        permissions: {
+          keys: [
+            'all'
+          ]
+          secrets: [
+            'all'
+          ]
+          certificates: [
+            'all'
+          ]
+        }
       }
     ]
   }

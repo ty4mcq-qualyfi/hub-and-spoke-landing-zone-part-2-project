@@ -43,3 +43,5 @@ param parAspSkuName = 'B1'
 param parAspSkuSize = 'B1'
 param parAspSkuTier = 'Basic'
 param parWaLinuxFxVersion = 'DOTNETCORE|7.0'
+
+param parUserObjectId = 'deb08a59-dd50-4e82-9b30-e3a84d5cd4fa'
