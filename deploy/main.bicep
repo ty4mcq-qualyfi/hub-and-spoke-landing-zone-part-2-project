@@ -254,8 +254,8 @@ module modVm 'br/public:avm/res/compute/virtual-machine:0.2.1' = {
       enabled: true
       settings: {
         EncryptionOperation: 'EnableEncryption'
-        KeuVaultResourceId: modEncryptKv.outputs.resourceId
-        KeuVaultURL: modEncryptKv.outputs.uri
+        KeyVaultResourceId: modEncryptKv.outputs.resourceId
+        KeyVaultURL: modEncryptKv.outputs.uri
         KeyEncryptionAlgorithm: 'RSA-OAEP'
         VolumeType: 'All'
         ResizeOSDisk: 'false'
