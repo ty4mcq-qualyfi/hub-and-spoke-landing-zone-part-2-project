@@ -3,15 +3,14 @@ var varGuidSuffix = substring(uniqueString(parUtc), 1, 8)
 
 param parUtc string = utcNow()
 
+param parAdminKvName string
+
 param parHubAddressPrefix string
 param parCoreAddressPrefix string
 param parSpokeDevAddressPrefix string
 param parSpokeProdAddressPrefix string
 
 param parComputerName string
-param parVmAdminUsername string
-@secure()
-param parVmAdminPassword string
 param parOsType string
 param parVmSize string
 param parOffer string
@@ -50,7 +49,9 @@ param parBranch string
 
 param parUserObjectId string
 
-
+resource resAdminKv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
+  name: parAdminKvName
+}
 
 // Virtual Networks
 module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
@@ -221,8 +222,8 @@ module modVm 'br/public:avm/res/compute/virtual-machine:0.2.1' = {
       Owner: 'coreOwner'
     }
     computerName: parComputerName
-    adminUsername: parVmAdminUsername
-    adminPassword: parVmAdminPassword
+    adminUsername: resAdminKv.getSecret('VmAdminUsername')
+    adminPassword: resAdminKv.getSecret('VmAdminPassword')
     osType: parOsType
     vmSize: parVmSize
     imageReference: {

@@ -1,5 +1,7 @@
 using 'main.bicep'
 
+param parAdminKvName = 'kv-secret-core-492181'
+
 param parHubAddressPrefix = '10.10'
 param parCoreAddressPrefix = '10.20'
 param parSpokeDevAddressPrefix = '10.30'
@@ -7,8 +9,6 @@ param parSpokeProdAddressPrefix = '10.31'
 
 // Virtual Machine Parameters
 param parComputerName = 'vm1core001'
-param parVmAdminUsername = 'adminusername'
-param parVmAdminPassword = 'Password123!'
 param parOsType = 'Windows'
 param parVmSize = 'Standard_D2S_v3'
 param parOffer = 'WindowsServer'
