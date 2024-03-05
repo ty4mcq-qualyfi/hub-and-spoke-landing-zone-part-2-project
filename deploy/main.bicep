@@ -270,6 +270,10 @@ module modVm 'br/public:avm/res/compute/virtual-machine:0.2.1' = {
     }
     extensionAntiMalwareConfig: {
       enabled: true
+      settings: {
+        AntimalwareEnabled: 'true'
+        RealtimeProtectionEnabled: 'true'
+      }
     }
     extensionMonitoringAgentConfig: {
       enabled: true
@@ -719,12 +723,6 @@ module modDevSql 'br/public:avm/res/sql/server:0.1.5' = {
         skuName: parSqlSkuName
         skuTier: parSqlSkuTier
         maxSizeBytes: parSqlMaxSizeBytes
-        diagnosticSettings: [
-          {
-            name: 'devSqlSaAudit'
-            storageAccountResourceId: modDevSa.outputs.resourceId
-          }
-        ]
       }
     ]
     privateEndpoints: [
@@ -767,12 +765,6 @@ module modProdSql 'br/public:avm/res/sql/server:0.1.5' = {
         skuName: parSqlSkuName
         skuTier: parSqlSkuTier
         maxSizeBytes: parSqlMaxSizeBytes
-        diagnosticSettings: [
-          {
-            name: 'prodSqlSaAudit'
-            storageAccountResourceId: modProdSa.outputs.resourceId
-          }
-        ]
       }
     ]
     privateEndpoints: [
