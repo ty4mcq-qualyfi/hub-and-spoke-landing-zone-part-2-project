@@ -719,6 +719,12 @@ module modDevSql 'br/public:avm/res/sql/server:0.1.5' = {
         skuName: parSqlSkuName
         skuTier: parSqlSkuTier
         maxSizeBytes: parSqlMaxSizeBytes
+        diagnosticSettings: [
+          {
+            name: 'devSqlSaAudit'
+            storageAccountResourceId: modDevSa.outputs.resourceId
+          }
+        ]
       }
     ]
     privateEndpoints: [
@@ -761,6 +767,12 @@ module modProdSql 'br/public:avm/res/sql/server:0.1.5' = {
         skuName: parSqlSkuName
         skuTier: parSqlSkuTier
         maxSizeBytes: parSqlMaxSizeBytes
+        diagnosticSettings: [
+          {
+            name: 'prodSqlSaAudit'
+            storageAccountResourceId: modProdSa.outputs.resourceId
+          }
+        ]
       }
     ]
     privateEndpoints: [
