@@ -265,6 +265,13 @@ module modVm 'br/public:avm/res/compute/virtual-machine:0.2.1' = {
         ResizeOSDisk: 'false'
       }
     }
+    extensionDependencyAgentConfig: {
+      enabled: true
+    }
+    extensionMonitoringAgentConfig: {
+      enabled: true
+      monitoringWorkspaceResourceId: modLaw.outputs.resourceId
+    }
   }
 }
 
