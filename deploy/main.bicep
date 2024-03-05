@@ -45,7 +45,11 @@ param parAspSkuSize string
 param parAspSkuTier string
 param parWaLinuxFxVersion string
 
+param parRepoUrl string
+param parBranch string
+
 param parUserObjectId string
+
 
 
 // Virtual Networks
@@ -662,6 +666,23 @@ module modProdWa 'br/public:avm/res/web/site:0.2.0' = {
     siteConfig: {
       linuxFxVersion: parWaLinuxFxVersion
     }
+  }
+}
+
+module modDevWaSrcCntrl '../srccntrl.bicep' = {
+  name: 'devWaSrcCntrl'
+  params: {
+    parWaName: '${modDevWa.outputs.name}/web'
+    parRepoUrl: parRepoUrl
+    parBranch: parBranch
+  }
+}
+module modProdWaSrcCntrl '../srccntrl.bicep' = {
+  name: 'prodWaSrcCntrl'
+  params: {
+    parWaName: '${modProdWa.outputs.name}/web'
+    parRepoUrl: parRepoUrl
+    parBranch: parBranch
   }
 }
 
