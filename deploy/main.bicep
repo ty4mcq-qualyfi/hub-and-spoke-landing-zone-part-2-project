@@ -882,3 +882,16 @@ module modEncryptKv 'br/public:avm/res/key-vault/vault:0.3.4' = {
     ]
   }
 }
+
+// Log Analytics Workspace
+module modLaw 'br/public:avm/res/operational-insights/workspace:0.3.3' = {
+  name: 'idk'
+  params: {
+    name: 'law-core-${varLocation}-001-${varGuidSuffix}'
+    location: varLocation
+    tags: {
+      Dept: 'coreServices'
+      Owner: 'coreServicesOwner'
+    }
+  }
+}
