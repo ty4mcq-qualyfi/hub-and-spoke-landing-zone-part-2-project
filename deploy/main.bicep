@@ -912,9 +912,9 @@ module modLaw 'br/public:avm/res/operational-insights/workspace:0.3.3' = {
 }
 
 module modVmDcr 'br/public:avm/res/insights/data-collection-rule:0.1.2' = {
-  name: 'MSVMI-vmDcr'
+  name: 'vmDcr'
   params: {
-    name: 'idk'
+    name: 'MSVMI-vmDcr'
     location: varLocation
     dataFlows: [
       {
@@ -927,7 +927,7 @@ module modVmDcr 'br/public:avm/res/insights/data-collection-rule:0.1.2' = {
       }
       {
         destinations: [
-          modLaw.outputs.resourceId
+          modLaw.outputs.name
         ]
         streams: [
           'Microsoft-Event'
@@ -1013,7 +1013,7 @@ module modVmDcr 'br/public:avm/res/insights/data-collection-rule:0.1.2' = {
       logAnalytics: [
         {
           name: modLaw.outputs.name
-          workspaceResourceId: modLaw.outputs.name
+          workspaceResourceId: modLaw.outputs.resourceId
         }
       ]
     }
