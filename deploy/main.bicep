@@ -684,7 +684,7 @@ module modProdWa 'br/public:avm/res/web/site:0.2.0' = {
   }
 }
 
-module modDevWaSrcCntrl '../srccntrl.bicep' = {
+module modDevWaSrcCntrl '../deploy/modules/srccntrl.bicep' = {
   name: 'devWaSrcCntrl'
   params: {
     parWaName: '${modDevWa.outputs.name}/web'
@@ -692,7 +692,7 @@ module modDevWaSrcCntrl '../srccntrl.bicep' = {
     parBranch: parBranch
   }
 }
-module modProdWaSrcCntrl '../srccntrl.bicep' = {
+module modProdWaSrcCntrl '../deploy/modules/srccntrl.bicep' = {
   name: 'prodWaSrcCntrl'
   params: {
     parWaName: '${modProdWa.outputs.name}/web'
@@ -898,7 +898,7 @@ module modEncryptKv 'br/public:avm/res/key-vault/vault:0.3.4' = {
   }
 }
 
-// Log Analytics Workspace
+// Log Analytics Workspace + Insights
 module modLaw 'br/public:avm/res/operational-insights/workspace:0.3.3' = {
   name: 'idk'
   params: {
@@ -908,5 +908,115 @@ module modLaw 'br/public:avm/res/operational-insights/workspace:0.3.3' = {
       Dept: 'coreServices'
       Owner: 'coreServicesOwner'
     }
+  }
+}
+
+module modVmDcr 'br/public:avm/res/insights/data-collection-rule:0.1.2' = {
+  name: 'MSVMI-vmDcr'
+  params: {
+    name: 'idk'
+    location: varLocation
+    dataFlows: [
+      {
+        destinations: [
+          'VMInsightsPerf-Logs-Dest'
+        ]
+        streams: [
+          'Microsoft-InsightsMetrics'
+        ]
+      }
+      {
+        destinations: [
+          modLaw.outputs.resourceId
+        ]
+        streams: [
+          'Microsoft-Event'
+        ]
+      }
+    ]
+    dataSources: {
+      performanceCounters: [
+        {
+          counterSpecifiers: [
+            '\\LogicalDisk(_Total)\\% Disk Read Time'
+            '\\LogicalDisk(_Total)\\% Disk Time'
+            '\\LogicalDisk(_Total)\\% Disk Write Time'
+            '\\LogicalDisk(_Total)\\% Free Space'
+            '\\LogicalDisk(_Total)\\% Idle Time'
+            '\\LogicalDisk(_Total)\\Avg. Disk Queue Length'
+            '\\LogicalDisk(_Total)\\Avg. Disk Read Queue Length'
+            '\\LogicalDisk(_Total)\\Avg. Disk sec/Read'
+            '\\LogicalDisk(_Total)\\Avg. Disk sec/Transfer'
+            '\\LogicalDisk(_Total)\\Avg. Disk sec/Write'
+            '\\LogicalDisk(_Total)\\Avg. Disk Write Queue Length'
+            '\\LogicalDisk(_Total)\\Disk Bytes/sec'
+            '\\LogicalDisk(_Total)\\Disk Read Bytes/sec'
+            '\\LogicalDisk(_Total)\\Disk Reads/sec'
+            '\\LogicalDisk(_Total)\\Disk Transfers/sec'
+            '\\LogicalDisk(_Total)\\Disk Write Bytes/sec'
+            '\\LogicalDisk(_Total)\\Disk Writes/sec'
+            '\\LogicalDisk(_Total)\\Free Megabytes'
+            '\\Memory\\% Committed Bytes In Use'
+            '\\Memory\\Available Bytes'
+            '\\Memory\\Cache Bytes'
+            '\\Memory\\Committed Bytes'
+            '\\Memory\\Page Faults/sec'
+            '\\Memory\\Pages/sec'
+            '\\Memory\\Pool Nonpaged Bytes'
+            '\\Memory\\Pool Paged Bytes'
+            '\\Network Interface(*)\\Bytes Received/sec'
+            '\\Network Interface(*)\\Bytes Sent/sec'
+            '\\Network Interface(*)\\Bytes Total/sec'
+            '\\Network Interface(*)\\Packets Outbound Errors'
+            '\\Network Interface(*)\\Packets Received Errors'
+            '\\Network Interface(*)\\Packets Received/sec'
+            '\\Network Interface(*)\\Packets Sent/sec'
+            '\\Network Interface(*)\\Packets/sec'
+            '\\Process(_Total)\\Handle Count'
+            '\\Process(_Total)\\Thread Count'
+            '\\Process(_Total)\\Working Set'
+            '\\Process(_Total)\\Working Set - Private'
+            '\\Processor Information(_Total)\\% Privileged Time'
+            '\\Processor Information(_Total)\\% Processor Time'
+            '\\Processor Information(_Total)\\% User Time'
+            '\\Processor Information(_Total)\\Processor Frequency'
+            '\\System\\Context Switches/sec'
+            '\\System\\Processes'
+            '\\System\\Processor Queue Length'
+            '\\System\\System Up Time'
+          ]
+          name: 'VMInsightsPerfCounters'
+          samplingFrequencyInSeconds: 60
+          streams: [
+            'Microsoft-InsightsMetrics'
+          ]
+        }
+      ]
+      windowsEventLogs: [
+        {
+          name: 'eventLogsDataSource'
+          streams: [
+            'Microsoft-Event'
+          ]
+          xPathQueries: [
+            'Application!*[System[(Level=1 or Level=2 or Level=3 or Level=4 or Level=0 or Level=5)]]'
+            'Security!*[System[(band(Keywords,13510798882111488))]]'
+            'System!*[System[(Level=1 or Level=2 or Level=3 or Level=4 or Level=0 or Level=5)]]'
+          ]
+        }
+      ]
+    }
+    destinations: {
+      azureMonitorMetrics: {
+        name: 'azureMonitorMetrics-default'
+      }
+      logAnalytics: [
+        {
+          name: modLaw.outputs.name
+          workspaceResourceId: modLaw.outputs.name
+        }
+      ]
+    }
+    kind: 'Windows'
   }
 }
