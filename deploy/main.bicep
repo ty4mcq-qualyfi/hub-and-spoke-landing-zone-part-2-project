@@ -1008,7 +1008,7 @@ module modVmDcr 'br/public:avm/res/insights/data-collection-rule:0.1.2' = {
     }
     destinations: {
       azureMonitorMetrics: {
-        name: 'azureMonitorMetrics-default'
+        name: 'VMInsightsPerf-Logs-Dest'
       }
       logAnalytics: [
         {
