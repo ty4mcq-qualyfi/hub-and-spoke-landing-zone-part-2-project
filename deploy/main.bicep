@@ -1024,7 +1024,7 @@ module modVmDcr 'br/public:avm/res/insights/data-collection-rule:0.1.2' = {
 module modVmDcrA 'modules/dcra.bicep' = {
   name: 'vmDcrA'
   params: {
-    parVmDcrName: modVmDcr.outputs.name
+    parVmName: modVm.outputs.name
     parVmDcrId: modVmDcr.outputs.resourceId
   }
 }
