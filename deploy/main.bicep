@@ -692,7 +692,7 @@ module modDevWaSrcCntrl '../deploy/modules/srccntrl.bicep' = {
     parBranch: parBranch
   }
 }
-module modProdWaSrcCntrl '../deploy/modules/srccntrl.bicep' = {
+module modProdWaSrcCntrl 'modules/srccntrl.bicep' = {
   name: 'prodWaSrcCntrl'
   params: {
     parWaName: '${modProdWa.outputs.name}/web'
@@ -900,7 +900,7 @@ module modEncryptKv 'br/public:avm/res/key-vault/vault:0.3.4' = {
 
 // Log Analytics Workspace + Insights
 module modLaw 'br/public:avm/res/operational-insights/workspace:0.3.3' = {
-  name: 'idk'
+  name: 'law'
   params: {
     name: 'law-core-${varLocation}-001-${varGuidSuffix}'
     location: varLocation
@@ -1018,5 +1018,13 @@ module modVmDcr 'br/public:avm/res/insights/data-collection-rule:0.1.2' = {
       ]
     }
     kind: 'Windows'
+  }
+}
+
+module modVmDcrA 'modules/dcra.bicep' = {
+  name: 'vmDcrA'
+  params: {
+    parVmDcrName: modVmDcr.outputs.name
+    parVmDcrId: modVmDcr.outputs.resourceId
   }
 }
