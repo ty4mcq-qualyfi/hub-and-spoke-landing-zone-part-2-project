@@ -681,6 +681,7 @@ module modProdWa 'br/public:avm/res/web/site:0.2.0' = {
     siteConfig: {
       linuxFxVersion: parWaLinuxFxVersion
     }
+    appInsightResourceId: modProdAppInsights.outputs.resourceId
   }
 }
 
@@ -910,7 +911,6 @@ module modLaw 'br/public:avm/res/operational-insights/workspace:0.3.3' = {
     }
   }
 }
-
 module modVmDcr 'br/public:avm/res/insights/data-collection-rule:0.1.2' = {
   name: 'vmDcr'
   params: {
@@ -1020,11 +1020,20 @@ module modVmDcr 'br/public:avm/res/insights/data-collection-rule:0.1.2' = {
     kind: 'Windows'
   }
 }
-
 module modVmDcrA 'modules/dcra.bicep' = {
   name: 'vmDcrA'
   params: {
     parVmName: modVm.outputs.name
     parVmDcrId: modVmDcr.outputs.resourceId
+  }
+}
+module modProdAppInsights 'br/public:avm/res/insights/component:0.2.1' = {
+  name: 'prodAppInsights'
+  params: {
+    name: 'appinsights-prod-001'
+    location: varLocation
+    workspaceResourceId: modLaw.outputs.resourceId
+    applicationType: 'web'
+    kind: 'web'
   }
 }
