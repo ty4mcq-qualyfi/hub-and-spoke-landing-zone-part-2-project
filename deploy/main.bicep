@@ -680,6 +680,20 @@ module modProdWa 'br/public:avm/res/web/site:0.2.0' = {
     ]
     siteConfig: {
       linuxFxVersion: parWaLinuxFxVersion
+      appSettings: [
+        {
+          name: 'APPINSIGHTS-INSTRUMENTATIONKEY'
+          value: modProdAppInsights.outputs.instrumentationKey
+        }
+        {
+          name:'ApplicationInsightsAgent_EXTENSION_VERSION'
+          value:'~3'
+        }
+        {
+          name:'XDT_MicrosoftApplicationInsights_Mode'
+          value:'default'
+        }
+      ]
     }
     appInsightResourceId: modProdAppInsights.outputs.resourceId
   }
