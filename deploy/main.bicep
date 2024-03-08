@@ -682,7 +682,7 @@ module modProdWa 'br/public:avm/res/web/site:0.2.0' = {
       linuxFxVersion: parWaLinuxFxVersion
       appSettings: [
         {
-          name: 'APPINSIGHTS-INSTRUMENTATIONKEY'
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
           value: modProdAppInsights.outputs.instrumentationKey
         }
         {
