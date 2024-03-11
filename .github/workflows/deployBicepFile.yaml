@@ -18,7 +18,7 @@ jobs:
         run: | 
           ls
       - name: Run Bicep Main Linter
-        run: az bicep build --file ./main.bicep
+        run: az bicep build --file ./deploy/main.bicep
       - name: Run Bicep Parameters Linter
         run: az bicep build-params --file ./deploy/parameters.bicepparam
 
