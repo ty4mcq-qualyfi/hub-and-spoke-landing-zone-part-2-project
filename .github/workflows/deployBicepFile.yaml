@@ -3,7 +3,25 @@ on: [push]
 permissions:
       id-token: write
       contents: read
-jobs:
+      
+jobs: 
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: Azure/ResourceModules
+          path: ./deploy/modules
+      - name: Check if CARML repo worked
+        run: | 
+          ls
+      - name: Run Bicep Main Linter
+        run: az bicep build --file ./deploy/main.bicep
+      - name: Run Bicep Parameters Linter
+        run: az bicep build-params --file ./deploy/parameters.bicepparam
+
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
