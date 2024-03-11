@@ -707,7 +707,7 @@ module modDevWaSrcCntrl '../deploy/modules/srccntrl.bicep' = {
     parBranch: parBranch
   }
 }
-module modProdWaSrcCntrl 'modules/srccntrl.bicep' = {
+module modProdWaSrcCntrl './modules/srccntrl.bicep' = {
   name: 'prodWaSrcCntrl'
   params: {
     parWaName: '${modProdWa.outputs.name}/web'
@@ -1034,7 +1034,7 @@ module modVmDcr 'br/public:avm/res/insights/data-collection-rule:0.1.2' = {
     kind: 'Windows'
   }
 }
-module modVmDcrA 'modules/dcra.bicep' = {
+module modVmDcrA './modules/dcra.bicep' = {
   name: 'vmDcrA'
   params: {
     parVmName: modVm.outputs.name
