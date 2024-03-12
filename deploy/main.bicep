@@ -369,7 +369,7 @@ module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
 module modAfw './ResourceModules/modules/network/azure-firewall/main.bicep' = {
   name: 'afw'
   params: {
-    name: 'afw-hub-{${parLocation}'
+    name: 'afw-hub-${parLocation}-001'
     location: parLocation
     tags: {
       Dept: 'hub'
