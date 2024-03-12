@@ -29,12 +29,12 @@ jobs:
           tenant-id: ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-    - name: Check out the CARML repo
+    - name: Checkout CARML
       uses: actions/checkout@v3
       with:
         repository: Azure/ResourceModules
-        path: ./ResourceModules
-        
+        path: ./deploy/ResourceModules
+
     - name: Deploy Bicep file
       uses: azure/arm-deploy@v1
       with:
