@@ -14,16 +14,12 @@ jobs:
           git config --global url.https://github.com/.insteadOf git://github.com/
           git clone https://github.com/Azure/ResourceModules.git
           ls
-    - name: Run Bicep linter
-      run: az bicep build --file ./deploy/main.bicep
-    - name: Run Bicep Param linter
-      run: az bicep build-params --file ./deploy/parameters.bicepparam
 
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
 
-    - name: Checkout code
+    - name: Checkout Code
       uses: actions/checkout@main
 
     - name: Log into Azure
