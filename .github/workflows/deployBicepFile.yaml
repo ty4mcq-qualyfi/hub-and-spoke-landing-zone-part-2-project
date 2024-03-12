@@ -8,21 +8,18 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          repository: Azure/ResourceModules
-          path: ./ResourceModules
-      - name: Check if CARML repo worked
-        run: | 
+    - uses: actions/checkout@v3
+    - name: Checkout CARML
+      run: |
+          git config --global url.https://github.com/.insteadOf git://github.com/
+          git clone https://github.com/Azure/ResourceModules.git
           ls
 
   build-and-deploy:
     runs-on: ubuntu-latest
     steps:
 
-    - name: Checkout code
+    - name: Checkout Code
       uses: actions/checkout@main
 
     - name: Log into Azure
