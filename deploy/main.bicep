@@ -1,4 +1,4 @@
-var parLocation = 'uksouth'
+param parLocation string = 'uksouth'
 var varGuidSuffix = substring(uniqueString(parUtc), 1, 8)
 
 param parUtc string = utcNow()
