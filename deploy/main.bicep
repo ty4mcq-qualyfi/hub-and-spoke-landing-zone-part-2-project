@@ -1,4 +1,4 @@
-var varLocation = 'uksouth'
+var parLocation = 'uksouth'
 var varGuidSuffix = substring(uniqueString(parUtc), 1, 8)
 
 param parUtc string = utcNow()
@@ -57,11 +57,11 @@ resource resAdminKv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
 module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   name: 'hubVnet'
   params: {
-    name: 'vnet-hub-${varLocation}-001'
+    name: 'vnet-hub-${parLocation}-001'
     addressPrefixes: [
       '${parHubAddressPrefix}.0.0/16'
     ]
-    location: varLocation
+    location: parLocation
     tags: {
       Dept: 'hub'
       Owner: 'hubOwner'
@@ -89,11 +89,11 @@ module modHubVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
 module modCoreVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   name: 'coreVnet'
   params: {
-    name: 'vnet-core-${varLocation}-001'
+    name: 'vnet-core-${parLocation}-001'
     addressPrefixes: [
       '${parCoreAddressPrefix}.0.0/16'
     ]
-    location: varLocation
+    location: parLocation
     tags: {
       Dept: 'core'
       Owner: 'coreOwner'
@@ -127,11 +127,11 @@ module modCoreVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
 module modSpokeDevVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   name: 'spokeDevVnet'
   params: {
-    name: 'vnet-dev-${varLocation}-001'
+    name: 'vnet-dev-${parLocation}-001'
     addressPrefixes: [
       '${parSpokeDevAddressPrefix}.0.0/16'
     ]
-    location: varLocation
+    location: parLocation
     tags: {
       Dept: 'dev'
       Owner: 'devOwner'
@@ -170,11 +170,11 @@ module modSpokeDevVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
 module modSpokeProdVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
   name: 'spokeProdVnet'
   params: {
-    name: 'vnet-prod-${varLocation}-001'
+    name: 'vnet-prod-${parLocation}-001'
     addressPrefixes: [
       '${parSpokeProdAddressPrefix}.0.0/16'
     ]
-    location: varLocation
+    location: parLocation
     tags: {
       Dept: 'prod'
       Owner: 'prodOwner'
@@ -215,8 +215,8 @@ module modSpokeProdVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
 module modVm 'br/public:avm/res/compute/virtual-machine:0.2.1' = {
   name: 'vm'
   params: {
-    name: 'vm-core-${varLocation}-001'
-    location: varLocation
+    name: 'vm-core-${parLocation}-001'
+    location: parLocation
     tags: {
       Dept: 'core'
       Owner: 'coreOwner'
@@ -288,7 +288,7 @@ module modNsg 'br/public:avm/res/network/network-security-group:0.1.2' = {
   name: 'nsg'
   params: {
     name: 'nsg-default'
-    location: varLocation
+    location: parLocation
     tags: {
       Dept: 'coreServices'
       Owner: 'coreServicesOwner'
@@ -300,8 +300,8 @@ module modNsg 'br/public:avm/res/network/network-security-group:0.1.2' = {
 // module modBastion 'br/public:avm/res/network/bastion-host:0.1.1' = {
 //   name: 'bastion'
 //   params: {
-//     name: 'bas-hub-${varLocation}-001'
-//     location: varLocation
+//     name: 'bas-hub-${parLocation}-001'
+//     location: parLocation
 //     tags: {
 //       Dept: 'hub'
 //       Owner: 'hubOwner'
@@ -309,7 +309,7 @@ module modNsg 'br/public:avm/res/network/network-security-group:0.1.2' = {
 //     vNetId: modHubVnet.outputs.resourceId
 //     skuName: parBastionSkuName
 //     publicIPAddressObject: {
-//       name: 'pip-hub-${varLocation}-bas-001'
+//       name: 'pip-hub-${parLocation}-bas-001'
 //       allocationMethod: 'Static'
 //     }
 //   }
@@ -320,7 +320,7 @@ module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
   name: 'afwPolicy'
   params: {
     name: 'AfwPolicy'
-    location: varLocation
+    location: parLocation
     tags: {
       Dept: 'hub'
       Owner: 'hubOwner'
@@ -368,17 +368,16 @@ module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
 module modAfw './ResourceModules/modules/network/azure-firewall/main.bicep' = {
   name: 'afw'
   params: {
-    name: 'afw-hub-{${varLocation}'
-    location: varLocation
+    name: 'afw-hub-{${parLocation}'
+    location: parLocation
     tags: {
       Dept: 'hub'
       Owner: 'hubOwner'
     }
     vNetId: modHubVnet.outputs.resourceId
     firewallPolicyId: modAfwPolicy.outputs.resourceId
-    subnetResourceId: modHubVnet.outputs.subnetResourceIds[2]
     publicIPAddressObject: {
-      name: 'pip-hub-${varLocation}-afw-001'
+      name: 'pip-hub-${parLocation}-afw-001'
       allocationMethod: 'Static'
     }
     diagnosticSettings: [
@@ -609,8 +608,8 @@ module modKvPrivateDnsZone 'br/public:avm/res/network/private-dns-zone:0.2.3'= {
 module modDevAsp 'br/public:avm/res/web/serverfarm:0.1.0' = {
   name: 'devAsp'
   params: {
-    name: 'asp-dev-${varLocation}-001-${uniqueString(parUtc)}'
-    location: varLocation
+    name: 'asp-dev-${parLocation}-001-${uniqueString(parUtc)}'
+    location: parLocation
     tags: {
       Dept: 'dev'
       Owner: 'devOwner'
@@ -629,8 +628,8 @@ module modDevAsp 'br/public:avm/res/web/serverfarm:0.1.0' = {
 module modProdAsp 'br/public:avm/res/web/serverfarm:0.1.0' = {
   name: 'prodAsp'
   params: {
-    name: 'asp-prod-${varLocation}-001-${uniqueString(parUtc)}'
-    location: varLocation
+    name: 'asp-prod-${parLocation}-001-${uniqueString(parUtc)}'
+    location: parLocation
     tags: {
       Dept: 'prod'
       Owner: 'prodOwner'
@@ -651,8 +650,8 @@ module modDevWa 'br/public:avm/res/web/site:0.2.0' = {
   name: 'devWa'
   params: {
     kind: 'app'
-    name: 'wa-dev-${varLocation}-001-${uniqueString(parUtc)}'
-    location: varLocation
+    name: 'wa-dev-${parLocation}-001-${uniqueString(parUtc)}'
+    location: parLocation
     tags: {
       Dept: 'dev'
       Owner: 'devOwner'
@@ -661,8 +660,8 @@ module modDevWa 'br/public:avm/res/web/site:0.2.0' = {
     publicNetworkAccess: 'Disabled'
     privateEndpoints: [
       {
-        name: 'pe-dev-${varLocation}-wa-001'
-        location: varLocation
+        name: 'pe-dev-${parLocation}-wa-001'
+        location: parLocation
         tags: {
           Dept: 'dev'
           Owner: 'devOwner'
@@ -695,8 +694,8 @@ module modProdWa 'br/public:avm/res/web/site:0.2.0' = {
   name: 'prodWa'
   params: {
     kind: 'app'
-    name: 'wa-prod-${varLocation}-001-${uniqueString(parUtc)}'
-    location: varLocation
+    name: 'wa-prod-${parLocation}-001-${uniqueString(parUtc)}'
+    location: parLocation
     tags: {
       Dept: 'prod'
       Owner: 'prodOwner'
@@ -705,8 +704,8 @@ module modProdWa 'br/public:avm/res/web/site:0.2.0' = {
     publicNetworkAccess: 'Disabled'
     privateEndpoints: [
       {
-        name: 'pe-prod-${varLocation}-wa-001'
-        location: varLocation
+        name: 'pe-prod-${parLocation}-wa-001'
+        location: parLocation
         tags: {
           Dept: 'prod'
           Owner: 'prodOwner'
@@ -751,7 +750,7 @@ module modProdWa 'br/public:avm/res/web/site:0.2.0' = {
   }
 }
 
-module modDevWaSrcCntrl '../deploy/modules/srccntrl.bicep' = {
+module modDevWaSrcCntrl './modules/srccntrl.bicep' = {
   name: 'devWaSrcCntrl'
   params: {
     parWaName: '${modDevWa.outputs.name}/web'
@@ -772,8 +771,8 @@ module modProdWaSrcCntrl './modules/srccntrl.bicep' = {
 module modDevSql 'br/public:avm/res/sql/server:0.1.5' = {
   name: 'devSql'
   params: {
-    name: 'sql-dev-${varLocation}-001-${uniqueString(parUtc)}'
-    location: varLocation
+    name: 'sql-dev-${parLocation}-001-${uniqueString(parUtc)}'
+    location: parLocation
     tags: {
       Dept: 'dev'
       Owner: 'devOwner'
@@ -783,7 +782,7 @@ module modDevSql 'br/public:avm/res/sql/server:0.1.5' = {
     publicNetworkAccess: 'Disabled'
     databases: [
       {
-        name: 'sqldb-dev-${varLocation}-001'
+        name: 'sqldb-dev-${parLocation}-001'
         tags: {
           Dept: 'dev'
           Owner: 'devOwner'
@@ -795,8 +794,8 @@ module modDevSql 'br/public:avm/res/sql/server:0.1.5' = {
     ]
     privateEndpoints: [
       {
-        name: 'pe-dev-${varLocation}-sql-001'
-        location: varLocation
+        name: 'pe-dev-${parLocation}-sql-001'
+        location: parLocation
         tags: {
           Dept: 'dev'
           Owner: 'devOwner'
@@ -814,8 +813,8 @@ module modDevSql 'br/public:avm/res/sql/server:0.1.5' = {
 module modProdSql 'br/public:avm/res/sql/server:0.1.5' = {
   name: 'prodSql'
   params: {
-    name: 'sql-prod-${varLocation}-001-${uniqueString(parUtc)}'
-    location: varLocation
+    name: 'sql-prod-${parLocation}-001-${uniqueString(parUtc)}'
+    location: parLocation
     tags: {
       Dept: 'prod'
       Owner: 'prodOwner'
@@ -825,7 +824,7 @@ module modProdSql 'br/public:avm/res/sql/server:0.1.5' = {
     publicNetworkAccess: 'Disabled'
     databases: [
       {
-        name: 'sqldb-prod-${varLocation}-001'
+        name: 'sqldb-prod-${parLocation}-001'
         tags: {
           Dept: 'prod'
           Owner: 'prodOwner'
@@ -837,8 +836,8 @@ module modProdSql 'br/public:avm/res/sql/server:0.1.5' = {
     ]
     privateEndpoints: [
       {
-        name: 'pe-prod-${varLocation}-sql-001'
-        location: varLocation
+        name: 'pe-prod-${parLocation}-sql-001'
+        location: parLocation
         tags: {
           Dept: 'prod'
           Owner: 'prodOwner'
@@ -868,8 +867,8 @@ module modDevSa 'br/public:avm/res/storage/storage-account:0.6.0' = {
     publicNetworkAccess: 'Disabled'
     privateEndpoints: [
       {
-        name: 'pe-dev-${varLocation}-sa-001'
-        location: varLocation
+        name: 'pe-dev-${parLocation}-sa-001'
+        location: parLocation
         tags: {
           Dept: 'dev'
           Owner: 'devOwner'
@@ -897,8 +896,8 @@ module modProdSa 'br/public:avm/res/storage/storage-account:0.6.0' = {
     publicNetworkAccess: 'Disabled'
     privateEndpoints: [
       {
-        name: 'pe-prod-${varLocation}-sa-001'
-        location: varLocation
+        name: 'pe-prod-${parLocation}-sa-001'
+        location: parLocation
         tags: {
           Dept: 'prod'
           Owner: 'prodOwner'
@@ -919,7 +918,7 @@ module modEncryptKv 'br/public:avm/res/key-vault/vault:0.3.4' = {
   name: 'encryptKv'
   params: {
     name: 'kv-encrypt-core-${varGuidSuffix}'
-    location: varLocation
+    location: parLocation
     tags: {
       Dept: 'core'
       Owner: 'coreOwner'
@@ -931,8 +930,8 @@ module modEncryptKv 'br/public:avm/res/key-vault/vault:0.3.4' = {
     sku: 'standard'
     privateEndpoints: [
       {
-        name: 'pe-core-${varLocation}-kv-001'
-        location: varLocation
+        name: 'pe-core-${parLocation}-kv-001'
+        location: parLocation
         tags: {
           Dept: 'core'
           Owner: 'coreOwner'
@@ -969,8 +968,8 @@ module modEncryptKv 'br/public:avm/res/key-vault/vault:0.3.4' = {
 module modLaw 'br/public:avm/res/operational-insights/workspace:0.3.3' = {
   name: 'law'
   params: {
-    name: 'law-core-${varLocation}-001-${varGuidSuffix}'
-    location: varLocation
+    name: 'law-core-${parLocation}-001-${varGuidSuffix}'
+    location: parLocation
     tags: {
       Dept: 'coreServices'
       Owner: 'coreServicesOwner'
@@ -981,7 +980,7 @@ module modVmDcr 'br/public:avm/res/insights/data-collection-rule:0.1.2' = {
   name: 'vmDcr'
   params: {
     name: 'MSVMI-vmDcr'
-    location: varLocation
+    location: parLocation
     dataFlows: [
       {
         destinations: [
@@ -1097,7 +1096,7 @@ module modProdAppInsights 'br/public:avm/res/insights/component:0.2.1' = {
   name: 'prodAppInsights'
   params: {
     name: 'appinsights-prod-001'
-    location: varLocation
+    location: parLocation
     workspaceResourceId: modLaw.outputs.resourceId
     applicationType: 'web'
     kind: 'web'
