@@ -315,7 +315,7 @@ module modNsg 'br/public:avm/res/network/network-security-group:0.1.2' = {
 //   }
 // }
 
-// Firewall Policy + Firewall Test
+// Firewall Policy + Firewall
 module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
   name: 'afw'
   params: {
@@ -360,6 +360,36 @@ module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
             ]
           }
         ]
+      }
+    ]
+  }
+}
+
+module modAfw './ResourceModules/modules/network/application-gateway/main.bicep' = {
+  name: 'afw'
+  params: {
+    name: 'afw-hub-{${varLocation}'
+    location: varLocation
+    tags: {
+      Dept: 'hub'
+      Owner: 'hubOwner'
+    }
+    vNetId: modHubVnet.outputs.resourceId
+    firewallPolicyId: modAfwPolicy.outputs.resourceId
+    subnetResourceId: modHubVnet.outputs.subnetResourceIds[2]
+    publicIPAddressObject: {
+      name: 'pip-hub-${varLocation}-afw-001'
+      allocationMethod: 'Static'
+    }
+    diagnosticSettings: [
+      {
+        metricCategories: [
+          {
+            category: 'AllMetrics'
+          }
+        ]
+        name: 'diagnosticSettings'
+        workspaceResourceId: modLaw.outputs.resourceId  
       }
     ]
   }
@@ -648,6 +678,17 @@ module modDevWa 'br/public:avm/res/web/site:0.2.0' = {
     siteConfig: {
       linuxFxVersion: parWaLinuxFxVersion
     }
+    diagnosticSettings: [
+      {
+        metricCategories: [
+          {
+            category: 'AllMetrics'
+          }
+        ]
+        name: 'diagnosticSettings'
+        workspaceResourceId: modLaw.outputs.resourceId
+      }
+    ]
   }
 }
 module modProdWa 'br/public:avm/res/web/site:0.2.0' = {
@@ -696,6 +737,17 @@ module modProdWa 'br/public:avm/res/web/site:0.2.0' = {
       ]
     }
     appInsightResourceId: modProdAppInsights.outputs.resourceId
+    diagnosticSettings: [
+      {
+        metricCategories: [
+          {
+            category: 'AllMetrics'
+          }
+        ]
+        name: 'diagnosticSettings'
+        workspaceResourceId: modLaw.outputs.resourceId
+      }
+    ]
   }
 }
 
