@@ -317,7 +317,7 @@ module modNsg 'br/public:avm/res/network/network-security-group:0.1.2' = {
 
 // Firewall Policy + Firewall
 module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
-  name: 'afw'
+  name: 'afwPolicy'
   params: {
     name: 'AfwPolicy'
     location: varLocation
