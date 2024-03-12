@@ -26,6 +26,7 @@ param parStorageAccountType string
 
 param parAfwPolicyTier string
 param parAfwPolicyThreatIntelMode string
+param parAfwPip string
 
 param parSaKind string
 param parSaSkuName string
@@ -376,6 +377,9 @@ module modAfw './ResourceModules/modules/network/azure-firewall/main.bicep' = {
     }
     vNetId: modHubVnet.outputs.resourceId
     firewallPolicyId: modAfwPolicy.outputs.resourceId
+    hubIPAddresses:{
+      privateIPAddress: parAfwPip
+    }
     publicIPAddressObject: {
       name: 'pip-hub-${parLocation}-afw-001'
       allocationMethod: 'Static'
