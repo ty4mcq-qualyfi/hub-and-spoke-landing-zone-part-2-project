@@ -382,7 +382,7 @@ module modAfw './ResourceModules/modules/network/azure-firewall/main.bicep' = {
     }
     publicIPAddressObject: {
       name: 'pip-hub-${parLocation}-afw-001'
-      allocationMethod: 'Static'
+      publicIPAllocationMethod: 'Static'
     }
     diagnosticSettings: [
       {
