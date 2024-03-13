@@ -8,12 +8,19 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v3
+
     - name: Checkout CARML
-      run: |
-          git config --global url.https://github.com/.insteadOf git://github.com/
-          git clone https://github.com/Azure/ResourceModules.git
-          ls
+      uses: actions/checkout@v3
+      with:
+        repository: Azure/ResourceModules
+        path: ./deploy/ResourceModules
+
+    - name: Run Bicep Main Linter
+      run: az bicep build --file ./deploy/main.bicep
+    - name: Run Bicep Parameters Linter
+      run: az bicep build-params --file ./deploy/parameters.bicepparam
 
   build-and-deploy:
     runs-on: ubuntu-latest
