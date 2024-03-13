@@ -104,11 +104,13 @@ module modCoreVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
         name: 'VMSubnet'
         addressPrefix: '${parCoreAddressPrefix}.1.0/24'
         networkSecurityGroupResourceId: modNsg.outputs.resourceId
+        routeTableResourceId: modRt.outputs.resourceId
       }
       {
         name: 'KVSubnet'
         addressPrefix: '${parCoreAddressPrefix}.2.0/24'
         networkSecurityGroupResourceId: modNsg.outputs.resourceId
+        routeTableResourceId: modRt.outputs.resourceId
       }
     ]
     peerings: [
@@ -142,16 +144,19 @@ module modSpokeDevVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
         name: 'AppSubnet'
         addressPrefix: '${parSpokeDevAddressPrefix}.1.0/24'
         networkSecurityGroupResourceId: modNsg.outputs.resourceId
+        routeTableResourceId: modRt.outputs.resourceId
       }
       {
         name: 'SqlSubnet'
         addressPrefix: '${parSpokeDevAddressPrefix}.2.0/24'
         networkSecurityGroupResourceId: modNsg.outputs.resourceId
+        routeTableResourceId: modRt.outputs.resourceId
       }
       {
         name: 'StSubnet'
         addressPrefix: '${parSpokeDevAddressPrefix}.3.0/24'
         networkSecurityGroupResourceId: modNsg.outputs.resourceId
+        routeTableResourceId: modRt.outputs.resourceId
       }
     ]
     peerings: [
@@ -185,16 +190,19 @@ module modSpokeProdVnet 'br/public:avm/res/network/virtual-network:0.1.1' = {
         name: 'AppSubnet'
         addressPrefix: '${parSpokeProdAddressPrefix}.1.0/24'
         networkSecurityGroupResourceId: modNsg.outputs.resourceId
+        routeTableResourceId: modRt.outputs.resourceId
       }
       {
         name: 'SqlSubnet'
         addressPrefix: '${parSpokeProdAddressPrefix}.2.0/24'
         networkSecurityGroupResourceId: modNsg.outputs.resourceId
+        routeTableResourceId: modRt.outputs.resourceId
       }
       {
         name: 'StSubnet'
         addressPrefix: '${parSpokeProdAddressPrefix}.3.0/24'
         networkSecurityGroupResourceId: modNsg.outputs.resourceId
+        routeTableResourceId: modRt.outputs.resourceId
       }
     ]
     peerings: [
@@ -365,7 +373,6 @@ module modAfwPolicy 'br/public:avm/res/network/firewall-policy:0.1.0' = {
     ]
   }
 }
-
 module modAfw './ResourceModules/modules/network/azure-firewall/main.bicep' = {
   name: 'afw'
   params: {
@@ -393,6 +400,30 @@ module modAfw './ResourceModules/modules/network/azure-firewall/main.bicep' = {
         ]
         name: 'diagnosticSettings'
         workspaceResourceId: modLaw.outputs.resourceId  
+      }
+    ]
+  }
+}
+
+// Route Table
+module modRt 'br/public:avm/res/network/route-table:0.2.2' = {
+  name: 'rt'
+  params: {
+    name: 'rt-${parLocation}-001'
+    location: parLocation
+    tags: {
+      Dept: 'coreServices'
+      Owner: 'coreServicesOwner'
+    }
+    routes: [
+      {
+        name: 'Default'
+        properties: {
+          addressPrefix: '0.0.0.0/0'
+          nextHopType: 'VirtualAppliance'
+          nextHopIpAddress: parAfwPip
+          hasBgpOverride: false
+        }
       }
     ]
   }
