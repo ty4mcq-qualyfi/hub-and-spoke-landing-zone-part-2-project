@@ -5,9 +5,11 @@ permissions:
       contents: read
       
 jobs: 
+
   lint:
     runs-on: ubuntu-latest
     steps:
+
     - name: Checkout Code
       uses: actions/checkout@v3
 
@@ -19,11 +21,68 @@ jobs:
 
     - name: Run Bicep Main Linter
       run: az bicep build --file ./deploy/main.bicep
+
     - name: Run Bicep Parameters Linter
       run: az bicep build-params --file ./deploy/parameters.bicepparam
 
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+
+    - uses: actions/checkout@v3
+    - name: 'Login to Azure'
+
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Checkout CARML
+      uses: actions/checkout@v3
+      with:
+        repository: Azure/ResourceModules
+        path: ./deploy/ResourceModules
+
+    - uses: azure/arm-deploy@v1
+      name: Run Preflight Validation
+      with:
+        subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        resourceGroupName: ${{ secrets.AZURE_RG }}
+        template: ./deploy/main.bicep
+        parameters: ./deploy/parameters.bicepparam
+        deploymentMode: Validate
+
+  preview:
+    runs-on: ubuntu-latest
+    needs: [lint, validate]
+    steps:
+    - name: 'Login to Azure'
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+        subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+    - name: Checkout CARML
+      uses: actions/checkout@v3
+      with:
+        repository: Azure/ResourceModules
+        path: ./deploy/ResourceModules
+
+    - uses: azure/arm-deploy@v1
+      name: Run What-If
+      with:
+        subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        resourceGroupName: ${{ secrets.AZURE_RG }}
+        template: ./deploy/main.bicep
+        parameters: ./deploy/parameters.bicepparam
+        failOnStdErr: false
+        additionalArguments: --what-if
+
   build-and-deploy:
     runs-on: ubuntu-latest
+    needs: preview
     steps:
 
     - name: Checkout Code
@@ -42,7 +101,7 @@ jobs:
         repository: Azure/ResourceModules
         path: ./deploy/ResourceModules
 
-    - name: Deploy Bicep file
+    - name: Deploy Bicep File
       uses: azure/arm-deploy@v1
       with:
         subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
