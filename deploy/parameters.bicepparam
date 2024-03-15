@@ -49,3 +49,6 @@ param parUserObjectId = 'deb08a59-dd50-4e82-9b30-e3a84d5cd4fa'
 
 param parRepoUrl = 'https://github.com/Azure-Samples/dotnetcore-docs-hello-world'
 param parBranch = 'master'
+
+// Application Gateway
+

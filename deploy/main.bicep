@@ -50,6 +50,9 @@ param parBranch string
 
 param parUserObjectId string
 
+param parAppGwName string = 'agw-hub-${parLocation}-001'
+param parAppGwPublicIPName string = 'pip-hub-${parLocation}-appgw-001'
+
 resource resAdminKv 'Microsoft.KeyVault/vaults@2023-07-01' existing = {
   name: parAdminKvName
 }
@@ -1135,5 +1138,116 @@ module modProdAppInsights 'br/public:avm/res/insights/component:0.2.1' = {
     workspaceResourceId: modLaw.outputs.resourceId
     applicationType: 'web'
     kind: 'web'
+  }
+}
+
+module modAppGw  './ResourceModules/modules/network/application-gateway/main.bicep' = {
+  name:'appGw'
+  params: {
+    name: parAppGwName
+    location: parLocation
+    tags: {
+      Dept: 'hub'
+      Owner: 'hubOwner'
+    }
+    sku:'Standard_v2'
+    gatewayIPConfigurations: [
+      {
+        name:'ipConfig'
+        properties: {
+          subnet: {
+            id: modHubVnet.outputs.subnetResourceIds[1]
+          }
+        }
+      }
+    ]
+    frontendIPConfigurations: [
+      {
+        name: 'frontendPIP'
+        properties: {
+          publicIPAddress: {
+            id: modAppGwPublicIP.outputs.resourceId
+          }
+        }
+      }
+    ]
+    frontendPorts: [
+      {
+        name: 'port_80'
+        properties: {
+          port: 80
+        }
+      }
+    ]
+    backendAddressPools: [
+      {
+        name: 'bepool-webapp'
+        properties: {
+          backendAddresses: [
+            {
+              fqdn: '${modProdWa.outputs.name}.azurewebsites.net'
+            }
+          ]
+        }
+      }
+    ]
+    backendHttpSettingsCollection: [
+      {
+        name: 'bepool-settings'
+        properties: {
+          port: 80
+          protocol: 'Http'
+          pickHostNameFromBackendAddress: true
+        }
+      }
+    ]
+    httpListeners: [
+      {
+        name: 'http-listener'
+        properties: {
+          frontendIPConfiguration: {
+            id: resourceId('Microsoft.Network/applicationGateways/frontendIPConfigurations', parAppGwName, 'frontendPIP')
+          }
+          frontendPort: {
+            id: resourceId('Microsoft.Network/applicationGateways/frontendPorts', parAppGwName, 'port_80')
+          }
+          protocol: 'Http'
+        }
+      }
+    ]
+    requestRoutingRules: [
+      {
+        name: 'http-only'
+        properties: {
+          ruleType: 'Basic'
+          priority: 1000
+          httpListener: {
+            id: resourceId('Microsoft.Network/applicationGateways/httpListeners', parAppGwName, 'http-listener')
+          }
+          backendAddressPool: {
+            id: resourceId('Microsoft.Network/applicationGateways/backendAddressPools', parAppGwName, 'bepool-webapp')
+          }
+          backendHttpSettings: {
+            id: resourceId('Microsoft.Network/applicationGateways/backendHttpSettingsCollection', parAppGwName, 'bepool-settings')
+          }
+        }
+      }
+    ]
+    autoscaleMinCapacity: 0
+    autoscaleMaxCapacity: 10
+  }
+}
+
+module modAppGwPublicIP 'br/public:avm/res/network/public-ip-address:0.2.2' = {
+  name:'appGatewayPIPDeployment'
+  params:{
+    name: parAppGwPublicIPName
+    location: parLocation
+    skuName: 'Standard'
+    tags: {
+      Dept: 'hub'
+      Owner: 'hubOwner'
+    }
+    publicIPAllocationMethod: 'Static'
   }
 }
